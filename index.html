@@ -1,0 +1,352 @@
+<!doctype html>
+<!--
+  File: index.html   |  NGƯỜI PHỤ TRÁCH: A (thành viên 1)
+  Mục đích: Khung xương HTML cho toàn bộ website "Sổ chi tiêu & học tập của
+            sinh viên sống xa nhà". 3 khu vực: Tổng quan, Chi tiêu, Học tập,
+            chuyển bằng tab (KHÔNG chuyển trang thật).
+
+  HỢP ĐỒNG: Mọi id/class trong file này đều được liệt kê ở bảng hợp đồng
+  (mục 1.1 và 1.2 trong tài liệu phân công). Nếu cần THÊM/SỬA id nào,
+  phải báo nhóm trước khi đổi — B và C đang code dựa vào tên đó.
+
+  CHỖ NÀO JS SẼ ĐỤNG VÀO: các thẻ có id đánh dấu (*) bên dưới.
+-->
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sổ chi tiêu &amp; học tập của sinh viên</title>
+
+    <!-- File CSS duy nhất, do người D viết -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- ================= HEADER ================= -->
+    <header class="site-header">
+      <h1>Sổ chi tiêu &amp; học tập</h1>
+      <p class="site-header__sub">
+        Dành cho sinh viên sống xa nhà — quản lý tiền và bài tập trong một trang
+      </p>
+    </header>
+
+    <!-- ================= TAB NAVIGATION (*) ========== -->
+    <!-- Người D: JS querySelector('#tabNav .tab-btn') và đọc data-tab -->
+    <nav id="tabNav" class="tab-nav">
+      <button
+        type="button"
+        class="tab-btn tab-btn--active"
+        data-tab="tong-quan"
+      >
+        Tổng quan
+      </button>
+      <button type="button" class="tab-btn" data-tab="chi-tieu">
+        Chi tiêu
+      </button>
+      <button type="button" class="tab-btn" data-tab="hoc-tap">Học tập</button>
+    </nav>
+
+    <main class="site-main">
+      <!-- ============================================================
+           KHU VỰC 1 — TỔNG QUAN (Dashboard)
+           Người C render nội dung vào các ô (*) bên dưới
+           ============================================================ -->
+      <section id="section-tong-quan" class="tab-panel">
+        <h2>Tổng quan</h2>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <h3 class="stat-card__label">Số dư hiện tại</h3>
+            <!-- (*) Người B tính, người C hiển thị -->
+            <p class="stat-card__value" id="statSoDuValue">— đ</p>
+          </div>
+
+          <div class="stat-card">
+            <h3 class="stat-card__label">Deadline gần nhất</h3>
+            <!-- (*) Người C -->
+            <p class="stat-card__value" id="statDeadlineValue">—</p>
+          </div>
+
+          <div class="stat-card">
+            <h3 class="stat-card__label">Số môn đang học</h3>
+            <!-- (*) Người C -->
+            <p class="stat-card__value" id="statSoMonValue">—</p>
+          </div>
+
+          <div class="stat-card">
+            <h3 class="stat-card__label">Số giao dịch đã ghi</h3>
+            <!-- (*) Người B cung cấp qua soGiaoDichHienCo() -->
+            <p class="stat-card__value" id="statGiaoDichValue">—</p>
+          </div>
+        </div>
+
+        <!-- (*) Người C muốn hiển thị top chi tiêu thì chèn vào đây -->
+        <div class="panel-sub">
+          <h3>Chi tiêu theo danh mục</h3>
+          <div id="chartDanhMuc" class="chart chart--danhmuc">
+            <!-- Nội dung do hoctap.js (người C) render -->
+          </div>
+        </div>
+
+        <!-- (*) Người C: biểu đồ tổng chi theo ngày -->
+        <div class="panel-sub">
+          <h3>Tổng chi theo ngày (7 ngày gần nhất có chi tiêu)</h3>
+          <div id="chartTheoNgay" class="chart chart--ngay">
+            <!-- Nội dung do hoctap.js (người C) render -->
+          </div>
+        </div>
+
+        <!-- (*) Người C: danh sách kết hợp (deadline sắp tới + giao dịch gần đây) -->
+        <div class="panel-sub">
+          <h3>Diễn biến gần đây</h3>
+          <ul id="danhSachGanDay" class="plain-list"></ul>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           KHU VỰC 2 — CHI TIÊU
+           Người B phụ trách toàn bộ logic của khu vực này
+           ============================================================ -->
+      <section id="section-chi-tieu" class="tab-panel tab-panel--hidden">
+        <h2>Chi tiêu</h2>
+
+        <!-- ===== FORM NHẬP GIAO DỊCH (*) ===== -->
+        <form id="formChiTieu" class="form" novalidate>
+          <div class="form-row">
+            <label for="noiDung">Nội dung</label>
+            <input
+              type="text"
+              id="noiDung"
+              name="noiDung"
+              placeholder="Ví dụ: ăn cơm, tiền nhà, xăng xe..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="soTien">Số tiền (đ)</label>
+            <input
+              type="number"
+              id="soTien"
+              name="soTien"
+              placeholder="0"
+              min="0"
+              step="1000"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="ngayChi">Ngày</label>
+            <input type="date" id="ngayChi" name="ngayChi" />
+          </div>
+
+          <div class="form-row">
+            <span class="form-row__label">Loại</span>
+            <div class="radio-group">
+              <label for="loaiChi">
+                <input
+                  type="radio"
+                  id="loaiChi"
+                  name="loai"
+                  value="chi"
+                  checked
+                />
+                Chi
+              </label>
+              <label for="loaiThu">
+                <input type="radio" id="loaiThu" name="loai" value="thu" />
+                Thu
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="danhMuc">Danh mục</label>
+            <select id="danhMuc" name="danhMuc">
+              <option value="">— Chọn danh mục —</option>
+              <option value="an-uong">Ăn uống</option>
+              <option value="nha-tro">Nhà trọ</option>
+              <option value="dien-nuoc">Điện / nước</option>
+              <option value="di-lai">Đi lại</option>
+              <option value="hoc-tap">Học tập</option>
+              <option value="giai-tri">Giải trí</option>
+              <option value="luong">Lương / trợ cấp</option>
+              <option value="khac">Khác</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btnThemGiaoDich" class="btn btn--primary">
+              Thêm giao dịch
+            </button>
+            <button type="reset" class="btn btn--ghost">Nhập lại</button>
+          </div>
+        </form>
+
+        <!-- ===== TỔNG HỢP (*) — người B điền số ===== -->
+        <div class="tong-hop">
+          <span class="tong-hop__item">
+            Tổng thu: <strong id="chiTieuTongThu" class="text-thu">—</strong>
+          </span>
+          <span class="tong-hop__item">
+            Tổng chi: <strong id="chiTieuTongChi" class="text-chi">—</strong>
+          </span>
+          <span class="tong-hop__item">
+            Còn lại: <strong id="chiTieuConLai">—</strong>
+          </span>
+        </div>
+
+        <!-- ===== BẢNG GIAO DỊCH (*) ===== -->
+        <h3>Danh sách giao dịch</h3>
+
+        <!-- ===== BỘ LỌC / TÌM KIẾM / SẮP XẾP — người B nối sự kiện =====
+             id: #locDanhMuc #locLoai #timKiemGiaoDich #sapXepNgay #btnXoaToanBo -->
+        <div class="filter-bar">
+          <div class="filter-bar__item">
+            <label for="locDanhMuc">Danh mục</label>
+            <select id="locDanhMuc">
+              <option value="">Tất cả danh mục</option>
+              <!-- hoctap/chitieu.js tự nhân bản options từ #danhMuc -->
+            </select>
+          </div>
+
+          <div class="filter-bar__item">
+            <label for="locLoai">Loại</label>
+            <select id="locLoai">
+              <option value="">Tất cả</option>
+              <option value="thu">Thu</option>
+              <option value="chi">Chi</option>
+            </select>
+          </div>
+
+          <div class="filter-bar__item">
+            <label for="sapXepNgay">Sắp xếp</label>
+            <select id="sapXepNgay">
+              <option value="moi-nhat">Ngày: mới nhất trước</option>
+              <option value="cu-nhat">Ngày: cũ nhất trước</option>
+              <option value="tien-cao">Số tiền: cao trước</option>
+            </select>
+          </div>
+
+          <div class="filter-bar__item filter-bar__item--tim">
+            <label for="timKiemGiaoDich">Tìm kiếm</label>
+            <input
+              type="search"
+              id="timKiemGiaoDich"
+              placeholder="Nhập nội dung..."
+              autocomplete="off"
+            />
+          </div>
+
+          <button type="button" id="btnXoaToanBo" class="btn btn--danger">
+            Xóa tất cả
+          </button>
+        </div>
+
+        <table id="bangChiTieu" class="data-table">
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Nội dung</th>
+              <th>Danh mục</th>
+              <th>Loại</th>
+              <th class="col-money">Số tiền (đ)</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <!-- (*) B CHỈ được đụng innerHTML vào tbody này -->
+          <tbody id="tbodyChiTieu">
+            <tr>
+              <td colspan="6" class="empty-row">
+                Chưa có giao dịch nào. Thêm giao dịch đầu tiên ở form trên.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============================================================
+           KHU VỰC 3 — HỌC TẬP
+           Người C phụ trách toàn bộ logic của khu vực này
+           ============================================================ -->
+      <section id="section-hoc-tap" class="tab-panel tab-panel--hidden">
+        <h2>Học tập</h2>
+
+        <!-- ===== FORM NHẬP MÔN HỌC / DEADLINE (*) ===== -->
+        <form id="formHocTap" class="form" novalidate>
+          <div class="form-row">
+            <label for="tenMon">Tên môn học</label>
+            <input
+              type="text"
+              id="tenMon"
+              name="tenMon"
+              placeholder="Ví dụ: Lập trình web, Giải tích..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="viecCanLam">Việc cần làm</label>
+            <input
+              type="text"
+              id="viecCanLam"
+              name="viecCanLam"
+              placeholder="Ví dụ: nộp bài tập lớn, ôn thi giữa kỳ..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="hanChot">Hạn chót</label>
+            <input type="date" id="hanChot" name="hanChot" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btnThemDeadline" class="btn btn--primary">
+              Thêm deadline
+            </button>
+            <button type="reset" class="btn btn--ghost">Nhập lại</button>
+          </div>
+        </form>
+
+        <!-- ===== BẢNG DEADLINE (*) ===== -->
+        <h3>Danh sách deadline</h3>
+        <table id="bangHocTap" class="data-table">
+          <thead>
+            <tr>
+              <th>Môn học</th>
+              <th>Việc cần làm</th>
+              <th>Hạn chót</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <!-- (*) C CHỈ được đụng innerHTML vào tbody này -->
+          <tbody id="tbodyHocTap">
+            <tr>
+              <td colspan="5" class="empty-row">
+                Chưa có deadline nào. Thêm việc cần làm ở form trên.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+      <p>Bài tập nhóm — HTML / CSS / JavaScript thuần, không dùng framework.</p>
+    </footer>
+
+    <!-- ================= SCRIPTS ================= -->
+    <!--
+      THỨ TỰ load là một phần của hợp đồng, KHÔNG ĐỔI:
+      1) chitieu.js  -> định nghĩa các hàm get...() mà Dashboard cần
+      2) hoctap.js   -> định nghĩa chuyenTab(), formatTienIch(), capNhatDashboard()
+                        và là file khởi động (nghe DOMContentLoaded)
+      Người C chịu trách nhiệm gọi initChiTieu() / initHocTap() / initDashboard().
+    -->
+    <script src="chitieu.js"></script>
+    <script src="hoctap.js"></script>
+  </body>
+</html>

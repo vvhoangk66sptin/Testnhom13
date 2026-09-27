@@ -1,0 +1,560 @@
+/*
+  File: style.css   |  NGƯỜI PHỤ TRÁCH: D (thành viên 4)
+  Mục đích: Toàn bộ giao diện cho cả 3 khu vực (Tổng quan / Chi tiêu / Học tập).
+            Chỉ ở mức KHUNG: layout + khoảng cách + màu tối giản.
+            Không hiệu ứng, không responsive chi tiết.
+
+  HỢP ĐỒNG: D là người DUY NHẤT định nghĩa biến CSS trong :root.
+  B và C chỉ ĐƯỢC dùng var(--ten-bien), không hard-code màu.
+  Danh sách class D phải hỗ trợ: xem bảng 1.2 trong tài liệu phân công.
+*/
+
+/* ============================================================
+   1. BIẾN CSS CHUNG — 12 biến theo hợp đồng (mục 1.5)
+   ============================================================ */
+:root {
+  /* màu */
+  --color-primary: #2c6e49;
+  --color-bg: #f5f6f7;
+  --color-surface: #ffffff;
+  --color-border: #dcdfe3;
+  --color-text: #26292c;
+  --color-text-muted: #6b7280;
+
+  /* khoảng cách */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+
+  /* khác */
+  --radius: 6px;
+  --font-base: Arial, Helvetica, sans-serif;
+
+  /* biến phụ trợ (D thêm, B/C có thể dùng) */
+  --color-thu: #1a7f4b;
+  --color-chi: #c0392b;
+  --width-form: 420px;
+  --width-page: 960px;
+}
+
+/* ============================================================
+   2. RESET NHẸ
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-base);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   3. HEADER / FOOTER  (class: .site-header, .site-footer)
+   ============================================================ */
+.site-header {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.site-header__sub {
+  font-size: 14px;
+  margin-top: var(--space-1);
+  opacity: 0.85;
+}
+
+.site-footer {
+  text-align: center;
+  padding: var(--space-4);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   4. TAB NAV  (id: #tabNav, class: .tab-nav / .tab-btn /
+                .tab-btn--active)  -> JS của D sẽ bật/tắt --active
+   ============================================================ */
+.tab-nav {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-4);
+  display: flex;
+  gap: var(--space-1);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: var(--space-2) var(--space-3);
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.tab-btn--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* ============================================================
+   5. LAYOUT CHÍNH  (class: .site-main / .tab-panel /
+                     .tab-panel--hidden / .panel-sub)
+   ============================================================ */
+.site-main {
+  max-width: var(--width-page);
+  margin: var(--space-4) auto;
+  padding: 0 var(--space-3);
+}
+
+.tab-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+/* Cách ẩn theo hợp đồng: JS thêm class này + set hidden = true */
+.tab-panel--hidden {
+  display: none;
+}
+
+.panel-sub {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border);
+}
+
+.tab-panel h2 {
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+}
+
+.tab-panel h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 16px;
+}
+
+/* ============================================================
+   6. DASHBOARD  (.stat-grid / .stat-card / id các ô giá trị)
+   ============================================================ */
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.stat-card {
+  flex: 1 1 200px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  background-color: #fafafa;
+}
+
+.stat-card__label {
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.stat-card__value {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+/* Khung trống để C vẽ biểu đồ */
+.chart {
+  min-height: 60px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+}
+
+.chart-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: 13px;
+}
+
+.chart-fill {
+  height: 14px;
+  background-color: var(--color-primary);
+  border-radius: 3px;
+}
+
+/* Biểu đồ cột ngang theo danh mục (người C render) */
+.chart--danhmuc .chart-bar {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chart__label {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart__track {
+  background-color: #eef0f1;
+  border-radius: 3px;
+  min-height: 14px;
+}
+
+.chart__value {
+  text-align: right;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Biểu đồ cột dọc theo ngày (người C render) */
+.chart--ngay {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  min-height: 130px;
+  padding: var(--space-2);
+}
+
+.chart-col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 110px;
+  gap: var(--space-1);
+}
+
+.chart-col__fill {
+  width: 100%;
+  max-width: 46px;
+  max-height: 70px;
+  background-color: var(--color-primary);
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+}
+
+.chart-col__value,
+.chart-col__label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.chart__empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 13px;
+  align-self: center;
+}
+
+.plain-list {
+  list-style: none;
+  font-size: 14px;
+}
+
+.plain-list li {
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ============================================================
+   7. FORM  (.form / .form-row / .radio-group / .form-actions /
+             .form-error)
+   ============================================================ */
+.form {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  background-color: #fafafa;
+  max-width: 640px;
+}
+
+.form-row {
+  margin-bottom: var(--space-3);
+}
+
+.form-row label,
+.form-row__label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: var(--space-1);
+}
+
+.form-row input[type="text"],
+.form-row input[type="number"],
+.form-row input[type="date"],
+.form-row select {
+  width: 100%;
+  max-width: var(--width-form);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+  background-color: var(--color-surface);
+}
+
+.radio-group {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.radio-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px var(--space-3);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.btn--ghost {
+  background-color: #e4e6e8;
+  color: var(--color-text);
+}
+
+.btn--danger {
+  background-color: transparent;
+  color: var(--color-chi);
+  padding: var(--space-1) var(--space-2);
+}
+
+/* B và C tạo phần tử này khi validate lỗi: <p class="form-error">...</p> */
+.form-error {
+  color: var(--color-chi);
+  font-size: 13px;
+  margin-top: var(--space-1);
+}
+
+/* ============================================================
+   8. KHỐI TỔNG HỢP  (.tong-hop) — id: #chiTieuTongThu/...
+   ============================================================ */
+.tong-hop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: #fafafa;
+  font-size: 14px;
+}
+
+.text-thu {
+  color: var(--color-thu);
+}
+
+.text-chi {
+  color: var(--color-chi);
+}
+
+/* ============================================================
+   9. BẢNG DỮ LIỆU  (.data-table / .badge / .empty-row / .btn-xoa)
+   ============================================================ */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-2);
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) 10px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #f0f1f2;
+  font-weight: bold;
+}
+
+.col-money {
+  text-align: right;
+}
+
+.empty-row {
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Badge thu/chi (B) và trạng thái deadline (C) */
+.badge {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.badge--thu {
+  background-color: #e6f4ea;
+  color: var(--color-thu);
+}
+
+.badge--chi {
+  background-color: #fdecea;
+  color: var(--color-chi);
+}
+
+.badge--qua-han {
+  background-color: #fdecea;
+  color: var(--color-chi);
+}
+
+.badge--hoan-thanh {
+  background-color: #eceff1;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+/* Badge deadline còn ít ngày / sắp tới (người C render) */
+.badge--hom-nay {
+  background-color: #fdecea;
+  color: var(--color-chi);
+  font-weight: bold;
+}
+
+.badge--sop {
+  background-color: #fff4e0;
+  color: #9a5b00;
+}
+
+.badge--suan {
+  background-color: #eef2f5;
+  color: var(--color-text-muted);
+}
+
+/* Dòng đã hoàn thành: làm mờ cả dòng */
+.row-hoan-thanh {
+  color: var(--color-text-muted);
+  background-color: #fafafa;
+}
+
+/* Nút "Hoàn thành / Bỏ hoàn thành" trong bảng Học tập */
+.btn-hoanthanh {
+  font-size: 13px;
+  padding: var(--space-1) var(--space-2);
+  background-color: #e6f4ea;
+  color: var(--color-thu);
+}
+
+/* ============================================================
+   10. THANH BỘ LỌC (người A đặt HTML, người B nối sự kiện)
+        .filter-bar / .filter-bar__item
+   ============================================================ */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: #fafafa;
+}
+
+.filter-bar__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.filter-bar__item label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.filter-bar__item select,
+.filter-bar__item input {
+  padding: 6px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.filter-bar__item--tim {
+  flex: 1 1 180px;
+}
+
+.filter-bar__item--tim input {
+  width: 100%;
+}
+
+/* ============================================================
+   11. RESPONSIVE NHẸ (người D thêm cho bản hoàn chỉnh)
+   ============================================================ */
+@media (max-width: 700px) {
+  .tab-panel {
+    padding: var(--space-3);
+  }
+
+  .tab-nav {
+    padding: 0 var(--space-2);
+  }
+
+  .tab-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: var(--space-2);
+    font-size: 14px;
+  }
+
+  .stat-card__value {
+    font-size: 18px;
+  }
+
+  .data-table {
+    font-size: 13px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--space-1) 6px;
+  }
+
+  .chart--danhmuc .chart-bar {
+    grid-template-columns: 80px 1fr auto;
+  }
+}
